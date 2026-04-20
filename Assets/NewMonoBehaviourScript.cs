@@ -12,11 +12,24 @@ public class SnakeScript : MonoBehaviour
 
     public Transform segmentPrefab;
 
+    public int initialSize = 4;
+
+    public GameManager manager;
+
+    private int score;
+
+    [SerializeField] private bool W = true;
+    [SerializeField] private bool A = true;
+    [SerializeField] private bool S = true;
+    [SerializeField] private bool D = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         segments = new List<Transform>();
         segments.Add(this.transform);
+
+        StartingSize();
     }
 
     // Update is called once per frame
@@ -25,11 +38,39 @@ public class SnakeScript : MonoBehaviour
         
         if (movement.action.ReadValue<Vector2>() != Vector2.zero)   // Will keep the player moving even when keys are not pressed
         {
-            if (movement.action.ReadValue<Vector2>() == Vector2.up || movement.action.ReadValue<Vector2>() == Vector2.down ||
-                movement.action.ReadValue<Vector2>() == Vector2.right || movement.action.ReadValue<Vector2>() == Vector2.left)
+            if (movement.action.ReadValue<Vector2>() == Vector2.up && W)    // Player can't move backwards. This set of code prevents the player from moving opposite to the direction they're travelling
             {
+                W = true;
+                S = false;
+                A = true;
+                D = true;
                 direction = movement.action.ReadValue<Vector2>();
             }
+            if (movement.action.ReadValue<Vector2>() == Vector2.down && S)  // Player can't move up
+            {
+                W = false;
+                S = true;
+                A = true;
+                D = true;
+                direction = movement.action.ReadValue<Vector2>();
+            }
+            if (movement.action.ReadValue<Vector2>() == Vector2.left && D) // Player can't move to the right
+            {
+                W = true;
+                S = true;
+                A = false;
+                D = true;
+                direction = movement.action.ReadValue<Vector2>();
+            }
+            if (movement.action.ReadValue<Vector2>() == Vector2.right && A) // Player can't move to the left
+            {
+                W = true;
+                S = true;
+                A = true;
+                D = false;
+                direction = movement.action.ReadValue<Vector2>();
+            }
+
 
         }
 
@@ -69,15 +110,35 @@ public class SnakeScript : MonoBehaviour
 
         this.transform.position = Vector3.zero;
         direction = Vector2.right;
+
+        W = true;
+        S = true;
+        A = true;
+        D = false;
+
+        StartingSize();
+    }
+
+    public void StartingSize()
+    {
+        for (int i = 1; i < initialSize; i++)
+        {
+            segments.Add(Instantiate(this.segmentPrefab));      // Creates segments and add them to the list of segments
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         switch (collision.tag) {
             case "Food":
+                score++;
+                manager.UpdateScore(score);
                 Grow();
                 break;
             case "Danger":
+                manager.UpdateHighScore();
+                score = 0;
+                manager.UpdateScore(score);
                 ResetGame();
                 break;
         }
