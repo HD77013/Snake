@@ -90,17 +90,9 @@ public class SnakeScript : MonoBehaviour
         );        
     }
 
-    public void Grow()
-    {
-        Transform newSegment = Instantiate(this.segmentPrefab);      // Create a new segment
-        newSegment.position = segments[segments.Count - 1].position; // Put at the same place as the current final segment
-
-        segments.Add(newSegment);                                   // Add to list of segments
-    }
-
     public void ResetGame()
     {
-       for (int i = segments.Count - 1; i > 0; i--) // Destroys all segments
+        for (int i = segments.Count - 1; i > 0; i--) // Destroys all segments
         {
             Destroy(segments[i].gameObject);
         }
@@ -109,7 +101,7 @@ public class SnakeScript : MonoBehaviour
         segments.Add(this.transform); // Adds the snakes head back
 
         this.transform.position = Vector3.zero;
-        direction = Vector2.right;
+        direction = Vector2.zero;
 
         W = true;
         S = true;
@@ -117,6 +109,14 @@ public class SnakeScript : MonoBehaviour
         D = false;
 
         StartingSize();
+    }
+
+    public void Grow()
+    {
+        Transform newSegment = Instantiate(this.segmentPrefab);      // Create a new segment
+        newSegment.position = segments[segments.Count - 1].position; // Put at the same place as the current final segment
+
+        segments.Add(newSegment);                                   // Add to list of segments
     }
 
     public void StartingSize()
@@ -140,6 +140,7 @@ public class SnakeScript : MonoBehaviour
                 score = 0;
                 manager.UpdateScore(score);
                 ResetGame();
+                manager.ResetGame();
                 break;
         }
 

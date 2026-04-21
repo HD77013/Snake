@@ -1,15 +1,23 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SocialPlatforms.Impl;
+using static UnityEditor.VersionControl.Asset;
+using static UnityEngine.Rendering.HableCurve;
 
 public class GameManager : MonoBehaviour
 {
+    public SnakeScript snake;
+    public UIFade fade;
+
     public float fps;
 
     [SerializeField]TextMeshProUGUI scoreText;
     [SerializeField]TextMeshProUGUI highScoreText;
 
     public int highScore;
+
+    public bool waiting;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -20,7 +28,22 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (snake.movement.action.WasPressedThisFrame() && waiting)
+        {
+            waiting = false;
+            fade.StopRoutine();
+        }
+
+    }
+
+    public void ResetGame()
+    {
+        if (!waiting) 
+        {
+        Debug.Log("Reseting Game");
+        waiting = true;
+        fade.StartRoutine();
+        }
     }
 
     public void UpdateScore(int score) 
