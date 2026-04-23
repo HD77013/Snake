@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -22,6 +23,10 @@ public class SnakeScript : MonoBehaviour
     [SerializeField] private bool A = true;
     [SerializeField] private bool S = true;
     [SerializeField] private bool D = false;
+
+    private Coroutine resetRoutine;
+
+    public bool canContinue;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -90,29 +95,68 @@ public class SnakeScript : MonoBehaviour
         );        
     }
 
-    public void ResetGame()
+    private IEnumerator DestroySegments()
     {
-        for (int i = segments.Count - 1; i > 0; i--) // Destroys all segments
-        {
-            Destroy(segments[i].gameObject);
-        }
+        Debug.Log("Coroutine activating");
 
-        segments.Clear();             // Clears segments in list
-        segments.Add(this.transform); // Adds the snakes head back
-
-        this.transform.position = Vector3.zero;
         direction = Vector2.zero;
 
-        W = true;
+        while (segments.Count > 1) // Destroys all segments
+        {
+            Transform last = segments[segments.Count - 1];
+            segments.RemoveAt(segments.Count - 1);  // Removes each segment from list
+
+            if (last != null)
+                Destroy(last.gameObject);   // Guard checking for any segments that are already destroyed
+
+            yield return new WaitForSeconds(1f);
+        }
+
+        canContinue = true;
+
+        W = false;
         S = true;
-        A = true;
+        A = false;
         D = false;
+    }
+
+    public void RestartSnake()
+    {
+        if (resetRoutine != null)
+        {
+            StopCoroutine(resetRoutine);
+            resetRoutine = null;
+        }
+
+        this.transform.position = Vector3.zero;
 
         StartingSize();
+        GetComponent<Collider2D>().enabled = true;
+    }
+
+    public void ResetGame()
+    {
+        Debug.Log("Reset");
+
+        if (resetRoutine != null)
+            StopCoroutine(resetRoutine);
+
+        GetComponent<Collider2D>().enabled = false;
+
+        resetRoutine = StartCoroutine(DestroySegments());
+
+        canContinue = false;
+
+        W = false;
+        S = false;
+        A = false;
+        D = false;
     }
 
     public void Grow()
     {
+        Debug.Log("New seg");
+
         Transform newSegment = Instantiate(this.segmentPrefab);      // Create a new segment
         newSegment.position = segments[segments.Count - 1].position; // Put at the same place as the current final segment
 
@@ -124,6 +168,10 @@ public class SnakeScript : MonoBehaviour
         for (int i = 1; i < initialSize; i++)
         {
             segments.Add(Instantiate(this.segmentPrefab));      // Creates segments and add them to the list of segments
+
+            Vector2 sizeDir = Vector2.up;
+
+            segments[i].position = segments[i - 1].position - new Vector3(sizeDir.x, sizeDir.y, 0);
         }
     }
 
@@ -136,6 +184,7 @@ public class SnakeScript : MonoBehaviour
                 Grow();
                 break;
             case "Danger":
+                Debug.Log("Collision");
                 manager.UpdateHighScore();
                 score = 0;
                 manager.UpdateScore(score);

@@ -28,10 +28,11 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (snake.movement.action.WasPressedThisFrame() && waiting)
+        if (snake.movement.action.WasPressedThisFrame() && waiting && snake.canContinue)
         {
             waiting = false;
             fade.StopRoutine();
+            snake.RestartSnake();
         }
 
     }
