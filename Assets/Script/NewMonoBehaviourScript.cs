@@ -26,7 +26,13 @@ public class SnakeScript : MonoBehaviour
 
     private Coroutine resetRoutine;
 
+    private bool isResetting;
+
     public bool canContinue;
+
+    [Header("Particles")]
+    [SerializeField] private ParticleSystem deathParticle;
+    private ParticleSystem particleInstance;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -40,7 +46,8 @@ public class SnakeScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (isResetting) return;
+
         if (movement.action.ReadValue<Vector2>() != Vector2.zero)   // Will keep the player moving even when keys are not pressed
         {
             if (movement.action.ReadValue<Vector2>() == Vector2.up && W)    // Player can't move backwards. This set of code prevents the player from moving opposite to the direction they're travelling
@@ -83,6 +90,9 @@ public class SnakeScript : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isResetting) return;
+        if (direction == Vector2.zero) return;  // Doesn't update segments when stationary
+
         for (int i = segments.Count - 1; i > 0; i--)
         {
             segments[i].position = segments[i - 1].position;    // Moves segments
@@ -97,27 +107,41 @@ public class SnakeScript : MonoBehaviour
 
     private IEnumerator DestroySegments()
     {
-        Debug.Log("Coroutine activating");
-
         direction = Vector2.zero;
+        
+        yield return new WaitForSeconds(0.5f);
 
-        while (segments.Count > 1) // Destroys all segments
+        for (int i = segments.Count - 1; i > 1; i--)
         {
+            Debug.Log("Delted segment");
+
+            particleInstance = Instantiate(deathParticle, segments[i].position, Quaternion.identity);
+
             Transform last = segments[segments.Count - 1];
-            segments.RemoveAt(segments.Count - 1);  // Removes each segment from list
+            segments.RemoveAt(segments.Count - 1);
 
             if (last != null)
-                Destroy(last.gameObject);   // Guard checking for any segments that are already destroyed
+                Destroy(last.gameObject);
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.05f);
         }
+
+        W = true;
+        S = true;
+        A = true;
+        D = true;
+
+        transform.position = Vector3.zero;
+        StartingSize();
+
+        GetComponent<Collider2D>().enabled = true; // Re-enable AFTER repositioning
+
+        isResetting = false;
 
         canContinue = true;
 
-        W = false;
-        S = true;
-        A = false;
-        D = false;
+        manager.StartFade();
+
     }
 
     public void RestartSnake()
@@ -127,16 +151,11 @@ public class SnakeScript : MonoBehaviour
             StopCoroutine(resetRoutine);
             resetRoutine = null;
         }
-
-        this.transform.position = Vector3.zero;
-
-        StartingSize();
-        GetComponent<Collider2D>().enabled = true;
     }
 
     public void ResetGame()
     {
-        Debug.Log("Reset");
+        isResetting = true;
 
         if (resetRoutine != null)
             StopCoroutine(resetRoutine);
@@ -184,12 +203,16 @@ public class SnakeScript : MonoBehaviour
                 Grow();
                 break;
             case "Danger":
-                Debug.Log("Collision");
-                manager.UpdateHighScore();
-                score = 0;
-                manager.UpdateScore(score);
-                ResetGame();
-                manager.ResetGame();
+                if (!canContinue)
+                {
+                    Debug.Log("Collision");
+                    manager.UpdateHighScore();
+                    score = 0;
+                    manager.UpdateScore(score);
+                    ResetGame();
+                    manager.ResetGame();
+                }
+
                 break;
         }
 

@@ -30,6 +30,8 @@ public class GameManager : MonoBehaviour
     {
         if (snake.movement.action.WasPressedThisFrame() && waiting && snake.canContinue)
         {
+            Debug.Log("Reseting Game");
+            snake.canContinue = false;
             waiting = false;
             fade.StopRoutine();
             snake.RestartSnake();
@@ -37,13 +39,16 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void StartFade()
+    {
+        fade.StartRoutine();
+    }
+
     public void ResetGame()
     {
         if (!waiting) 
         {
-        Debug.Log("Reseting Game");
-        waiting = true;
-        fade.StartRoutine();
+            waiting = true;
         }
     }
 

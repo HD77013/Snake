@@ -1287,6 +1287,8 @@ MonoBehaviour:
   A: 1
   S: 1
   D: 1
+  canContinue: 0
+  deathParticle: {fileID: 9060182555935580351, guid: 94731ae148675f546a5f4401d5b01d58, type: 3}
 --- !u!50 &1183169337
 Rigidbody2D:
   serializedVersion: 5
