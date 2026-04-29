@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 using UnityEngine.SocialPlatforms.Impl;
 using static UnityEditor.VersionControl.Asset;
 using static UnityEngine.Rendering.HableCurve;
@@ -22,7 +23,7 @@ public class GameManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Time.fixedDeltaTime = 1f / fps;        
+        Time.fixedDeltaTime = 1f / fps;
     }
 
     // Update is called once per frame

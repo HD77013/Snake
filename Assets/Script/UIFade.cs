@@ -11,6 +11,8 @@ public class UIFade : MonoBehaviour
 
     [SerializeField] private float fadeDuration = 1f;
 
+
+
     public void StartRoutine()
     {
         Debug.Log("Starting Routine");

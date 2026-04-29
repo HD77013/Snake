@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class SnakeScript : MonoBehaviour
+public class Snake2P : MonoBehaviour
 {
     public InputActionReference movement;
 
@@ -15,7 +15,7 @@ public class SnakeScript : MonoBehaviour
 
     public int initialSize = 4;
 
-    public GameManager manager;
+    public TwoPManager manager;
 
     private int score;
 
@@ -32,6 +32,13 @@ public class SnakeScript : MonoBehaviour
 
     public Vector2 allocatedPos;
 
+    public GameObject otherPLayerOBJ;
+    public Snake2P otherPlayer;
+
+    public bool playerDied;
+
+    public SpriteRenderer head;
+
     [Header("Particles")]
     [SerializeField] private ParticleSystem deathParticle;
     private ParticleSystem particleInstance;
@@ -39,6 +46,7 @@ public class SnakeScript : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+
         segments = new List<Transform>();
         segments.Add(this.transform);
 
@@ -60,37 +68,24 @@ public class SnakeScript : MonoBehaviour
         {
             if (movement.action.ReadValue<Vector2>() == Vector2.up && W)    // Player can't move backwards. This set of code prevents the player from moving opposite to the direction they're travelling
             {
-                W = true;
-                S = false;
-                A = true;
-                D = true;
+                W = true; S = false; A = true; D = true;
                 direction = movement.action.ReadValue<Vector2>();
             }
             if (movement.action.ReadValue<Vector2>() == Vector2.down && S)  // Player can't move up
             {
-                W = false;
-                S = true;
-                A = true;
-                D = true;
+                W = false; S = true; A = true; D = true;
                 direction = movement.action.ReadValue<Vector2>();
             }
             if (movement.action.ReadValue<Vector2>() == Vector2.left && D) // Player can't move to the right
             {
-                W = true;
-                S = true;
-                A = false;
-                D = true;
+                W = true;S = true; A = false; D = true;
                 direction = movement.action.ReadValue<Vector2>();
             }
             if (movement.action.ReadValue<Vector2>() == Vector2.right && A) // Player can't move to the left
             {
-                W = true;
-                S = true;
-                A = true;
-                D = false;
+                W = true; S = true; A = true; D = false;
                 direction = movement.action.ReadValue<Vector2>();
             }
-
 
         }
 
@@ -106,23 +101,57 @@ public class SnakeScript : MonoBehaviour
             segments[i].position = segments[i - 1].position;    // Moves segments
         }
 
+
+
         transform.position = new Vector3(       // Rounds values to ensure player moves along grid
             Mathf.Round(transform.position.x + direction.x),
             Mathf.Round(transform.position.y + direction.y),
             0.0f
-        );        
+        );
     }
+
+    public void Freeze()
+    {
+        direction = Vector2.zero;
+        isResetting = true;
+        W = false; S = false; A = false; D = false;
+    }
+
+    public void NewGame()
+    {
+        // Clear any leftover body segments (keeps the head)
+        for (int i = segments.Count - 1; i >= 1; i--)
+        {
+            Destroy(segments[i].gameObject);
+            segments.RemoveAt(i);
+        }
+
+        segments[0].GetComponent<SpriteRenderer>().enabled = true;
+
+        W = true; S = true; A = true; D = true;
+
+        direction = Vector2.zero;
+        playerDied = false;
+        transform.position = allocatedPos;
+
+        StartingSize();
+
+        GetComponent<Collider2D>().enabled = true;
+        isResetting = false;
+        canContinue = true;
+
+        head.enabled = true;
+    }
+
 
     private IEnumerator DestroySegments()
     {
         direction = Vector2.zero;
-        
-        yield return new WaitForSeconds(0.5f);
 
-        for (int i = segments.Count - 1; i > 1; i--)
+        yield return new WaitForSeconds(0.5f);  // Freezes the player. Give them time to realize "oh shit. I hit the wall or other player"
+
+        for (int i = segments.Count - 1; i > 0; i--)    // Death FX
         {
-            Debug.Log("Delted segment");
-
             particleInstance = Instantiate(deathParticle, segments[i].position, Quaternion.identity);
 
             Transform last = segments[segments.Count - 1];
@@ -134,21 +163,13 @@ public class SnakeScript : MonoBehaviour
             yield return new WaitForSeconds(0.05f);
         }
 
-        W = true;
-        S = true;
-        A = true;
-        D = true;
+        Instantiate(deathParticle, segments[0].position, Quaternion.identity);
+        segments[0].GetComponent<SpriteRenderer>().enabled = false;
 
-        transform.position = Vector2.zero;
-        StartingSize();
 
-        GetComponent<Collider2D>().enabled = true; // Re-enable AFTER repositioning
+        // Tell the manager the death FX is done — it will handle resetting both snakes
+        manager.OnDeathSequenceComplete();
 
-        isResetting = false;
-
-        canContinue = true;
-
-        manager.StartFade();
     }
 
     public void RestartSnake()
@@ -163,20 +184,16 @@ public class SnakeScript : MonoBehaviour
     public void ResetGame()
     {
         isResetting = true;
+        canContinue = false;
 
         if (resetRoutine != null)
             StopCoroutine(resetRoutine);
 
         GetComponent<Collider2D>().enabled = false;
 
+        W = false; S = false; A = false; D = false;
+
         resetRoutine = StartCoroutine(DestroySegments());
-
-        canContinue = false;
-
-        W = false;
-        S = false;
-        A = false;
-        D = false;
     }
 
     public void Grow()
@@ -203,23 +220,19 @@ public class SnakeScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        switch (collision.tag) {
+        switch (collision.tag)
+        {
             case "Food":
                 score++;
                 manager.UpdateScore(score);
                 Grow();
                 break;
             case "Danger":
-                if (!canContinue)
-                {
-                    Debug.Log("Collision");
-                    manager.UpdateHighScore();
-                    score = 0;
-                    manager.UpdateScore(score);
-                    ResetGame();
-                    manager.ResetGame();
-                }
-
+                manager.UpdateHighScore();
+                score = 0;
+                manager.UpdateScore(score);
+                playerDied = true;
+                manager.PlayerDied(this);   // Hand off to Manager to coordinate both snakes
                 break;
         }
 
