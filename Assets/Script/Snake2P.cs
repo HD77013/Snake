@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,7 +47,6 @@ public class Snake2P : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
         segments = new List<Transform>();
         segments.Add(this.transform);
 
@@ -101,8 +101,6 @@ public class Snake2P : MonoBehaviour
             segments[i].position = segments[i - 1].position;    // Moves segments
         }
 
-
-
         transform.position = new Vector3(       // Rounds values to ensure player moves along grid
             Mathf.Round(transform.position.x + direction.x),
             Mathf.Round(transform.position.y + direction.y),
@@ -119,7 +117,7 @@ public class Snake2P : MonoBehaviour
 
     public void NewGame()
     {
-        // Clear any leftover body segments (keeps the head)
+        // Keeps head while it ensures all other segments are removed
         for (int i = segments.Count - 1; i >= 1; i--)
         {
             Destroy(segments[i].gameObject);

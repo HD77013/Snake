@@ -529,8 +529,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1618917001
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -773,7 +773,7 @@ GameObject:
   - component: {fileID: 342332224}
   - component: {fileID: 342332228}
   m_Layer: 0
-  m_Name: Snake (1)
+  m_Name: Player 1
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -900,7 +900,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -937,10 +937,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac724687aefdbc7459d467ea280a15ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Snake2P
-  movement: {fileID: 5158105820447972796, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  movement: {fileID: 1304183331097997905, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   direction: {x: 0, y: 0}
   segments: []
-  segmentPrefab: {fileID: 234116894388206030, guid: 23bf635a52d7fa04b83fe93d831df78f, type: 3}
+  segmentPrefab: {fileID: 234116894388206030, guid: 6ac3496d7c43fdd4d8c10884626c1b57, type: 3}
   initialSize: 4
   manager: {fileID: 925275281}
   W: 1
@@ -1281,8 +1281,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1618917001
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1347,12 +1347,14 @@ MonoBehaviour:
   waiting: 0
   announcer: {fileID: 232740255}
   announcerText: {fileID: 178663614}
-  plr1: {fileID: 2086798909}
-  plr2: {fileID: 342332222}
+  plr1: {fileID: 342332222}
+  plr2: {fileID: 2086798909}
   snake1: {fileID: 2086798915}
   snake2: {fileID: 342332228}
   player1Pos: {x: -10, y: 0}
   player2Pos: {x: 10, y: 0}
+  Player1Name: 
+  Player2Name: 
 --- !u!1 &943891553
 GameObject:
   m_ObjectHideFlags: 0
@@ -1511,8 +1513,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1618917001
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -2205,8 +2207,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1618917001
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -2444,7 +2446,7 @@ GameObject:
   - component: {fileID: 2086798911}
   - component: {fileID: 2086798915}
   m_Layer: 0
-  m_Name: Snake
+  m_Name: Player 2
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2571,7 +2573,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 1, b: 0.046749115, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2608,10 +2610,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac724687aefdbc7459d467ea280a15ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Snake2P
-  movement: {fileID: 1304183331097997905, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  movement: {fileID: 5158105820447972796, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   direction: {x: 0, y: 0}
   segments: []
-  segmentPrefab: {fileID: 234116894388206030, guid: 23bf635a52d7fa04b83fe93d831df78f, type: 3}
+  segmentPrefab: {fileID: 234116894388206030, guid: 8348ca9df7c7ef64786c525e4f61ac51, type: 3}
   initialSize: 4
   manager: {fileID: 925275281}
   W: 1

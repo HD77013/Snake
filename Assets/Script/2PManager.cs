@@ -30,6 +30,15 @@ public class TwoPManager : MonoBehaviour
     public Vector2 player1Pos = new Vector2(-10, 0);
     public Vector2 player2Pos = new Vector2(10, 0);
 
+    public string Player1Name;
+    public string Player2Name;
+
+    public void InputPlayerNames(string name1, string name2)
+    {
+        Player1Name = name1;
+        Player2Name = name2;
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -92,9 +101,9 @@ public class TwoPManager : MonoBehaviour
     {
         // Set your UI text based on who survived
         if (winner == snake1)
-            announcerText.text = "Player 1 Wins!";
+            announcerText.text = "<color=red>" + Player1Name + "</color>" + " Wins!";
         else
-            announcerText.text = "Player 2 Wins!";
+            announcerText.text = "<color=green>" + Player2Name + "</color>" + " Wins!";
 
         announcer.SetActive(true);
 
